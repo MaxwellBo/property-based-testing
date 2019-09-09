@@ -3,7 +3,7 @@ import { sort } from './sort';
 
 describe("sort testing regimen - naive", () => {
   it('sorts a random array', () => {
-    const data = [4, 3, 6, 5, 1, 2]
+    const data = [4, 3, 5, 1, 2, 6]
 
     const sorted = sort(data);
 
@@ -36,7 +36,7 @@ describe("sort testing regimen - with property based expectation", () => {
   }
 
   it('sort a random array', () => {
-    const data = [4, 3, 6, 5, 1, 2]
+    const data = [4, 3, 5, 1, 2, 6]
 
     const sorted = sort(data);
 
@@ -76,7 +76,7 @@ describe("sort testing regimen - with input generation and property based expect
         const sorted = sort(data);
 
         expectToBeSorted(sorted);
-      })
-    );
+      }),
+      {verbose: true});
   })
 });
