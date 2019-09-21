@@ -25,6 +25,14 @@ describe("sort testing regimen - naive", () => {
 
     expect(sorted).toEqual([1]);
   })
+
+  // it('does not break when attempting to sort a really long array', () => {
+  //   const data: number[] = 🤔
+
+  //   const sorted = sort(data);
+
+  //   expect(sorted).toEqual(🤔);
+  // })
 });
 
 describe("sort testing regimen - with property based expectation", () => {
@@ -58,6 +66,14 @@ describe("sort testing regimen - with property based expectation", () => {
 
     expectToBeSorted(sorted);
   })
+
+  // it('does not break when attempting to sort a really long array', () => {
+  //   const data: number[] = 🤔
+
+  //   const sorted = sort(data);
+
+  //   expectToBeSorted(sorted);
+  // })
 });
 
 describe("sort testing regimen - with input generation and property based expectation", () => {
