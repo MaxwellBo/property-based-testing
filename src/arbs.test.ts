@@ -83,36 +83,20 @@ interface User {
   phone?: string
 }
 
-describe("Custom Arbitrary<T>s", () => {
-  // function tuple<T0>(arb0: Arbitrary<T0>): Arbitrary<[T0]>;
+describe.only("Custom Arbitrary<T>s", () => {
+  // function tuple<T0>    (arb0: Arbitrary<T0>):                      Arbitrary<[T0]>;
   // function tuple<T0, T1>(arb0: Arbitrary<T0>, arb1: Arbitrary<T1>): Arbitrary<[T0, T1]>;
-  // function tuple<T0, T1, T2>(...): Arbitrary<[T0, T1, T2]>;
-  // all the way up to T22! (I actually know why it's up to 22)
+  // ...
+
+  const arbInterval: Arbitrary<[number, number]> = 
+    fc.tuple(fc.nat(100), fc.nat(100)).filter(([a, b]) => a < b);
+
+  interrogate('tuple', arbInterval);
+
 
   const arbNumerals: Arbitrary<string> = fc.nat(9).map(t => t.toString())
   const PHONE_NUMBER_LENGTH = 10
   const arbPhoneNumber: Arbitrary<string> = fc.stringOf(arbNumerals, PHONE_NUMBER_LENGTH, PHONE_NUMBER_LENGTH)
-
-  const arbUser: Arbitrary<User> = fc.tuple(
-    fc.boolean(),
-    fc.unicodeString(),
-    fc.emailAddress(),
-    fc.option<string, undefined>(arbPhoneNumber, { nil: undefined })
-  ).map(([
-    admin,
-    name,
-    email,
-    phone
-  ]) => {
-    return { 
-      admin, 
-      name, 
-      email, 
-      phone 
-    }
-  })
-
-  interrogate('tuple', arbUser, 2);
 
   const arbUserPrime: Arbitrary<User> = fc.record({
     admin: fc.boolean(),
