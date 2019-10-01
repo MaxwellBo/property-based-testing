@@ -1,7 +1,8 @@
 import * as fc from 'fast-check';
 import { Arbitrary } from 'fast-check';
+import { forInStatement } from '@babel/types';
 
-function interrogate<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
+function prettySample<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
   it(type, () => {
     console.log(
       `${type}\n${'-'.repeat(type.length)}\n`, 
@@ -15,84 +16,102 @@ function interrogate<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
 describe("Primative Arbitrary<T>s", () => {
 
   const arbBoolean: Arbitrary<boolean> = fc.boolean();
-  interrogate('boolean', arbBoolean)
+  prettySample('boolean', arbBoolean)
 
   const arbNumber: Arbitrary<number> = fc.float();
-  interrogate('float', arbNumber)
+  prettySample('float', arbNumber)
 
   const arbNat: Arbitrary<number> = fc.nat(10);
-  interrogate('float', arbNat)
+  prettySample('float', arbNat)
 
   const arbUnicodeString: Arbitrary<string> = fc.unicodeString();
-  interrogate('unicodeString', arbUnicodeString)
+  prettySample('unicodeString', arbUnicodeString)
 });
 
 
 describe("Specific Arbitrary<string>s", () => {
 
   const arbIpV4: Arbitrary<string> = fc.ipV4Extended();
-  interrogate('ipV4', arbIpV4);
+  prettySample('ipV4', arbIpV4);
 
-  interrogate('emailAddress', fc.emailAddress())
+  prettySample('emailAddress', fc.emailAddress())
 
-  interrogate('uuid', fc.uuid())
+  prettySample('uuid', fc.uuid())
 
-  interrogate('webUrl', fc.webUrl())
+  prettySample('webUrl', fc.webUrl())
 
-  interrogate('date', fc.date())
+  prettySample('date', fc.date())
 
-  interrogate('unicodeJson', fc.unicodeJson())
+  prettySample('unicodeJson', fc.unicodeJson())
 });
 
 describe("T combinators", () => {
   // declare function constant<T>(value: T): Arbitrary<T>;
   const arbFive: Arbitrary<number> = fc.constant(5);
-  interrogate('constant', arbFive);
+  prettySample('constant', arbFive);
 
   // declare function constantFrom<T>(...values: T[]): Arbitrary<T>;
   const arbOdd: Arbitrary<number> = fc.constantFrom(1, 3, 5, 7, 9);
-  interrogate('constantFrom', arbOdd);
+  prettySample('constantFrom', arbOdd);
 });
 
 describe("Arbitrary<T> combinators", () => {
   // declare function array<T>(arb: Arbitrary<T>): Arbitrary<T[]>;
-  const arbSymbol: Arbitrary<string> = fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
-  const arbOneArmedBandit: Arbitrary<string[]> = fc.array(arbSymbol, 3, 3)
-  interrogate('array', arbOneArmedBandit);
+  const arbSymbol: Arbitrary<string> = 
+    fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
 
-  // https://github.com/dubzzz/fast-check/issues/391
-  const arbNatOrUndefined: Arbitrary<number | undefined> = fc.option(fc.nat(10), { nil: undefined })
-  interrogate('option', arbNatOrUndefined);
+  const arbOneArmedBandit: Arbitrary<string[]> = 
+    fc.array(arbSymbol, 3, 3)
+
+  prettySample('array', arbOneArmedBandit);
+
+  const arbNatOrUndefined: Arbitrary<number | undefined> = 
+    fc.option(fc.nat(10), { nil: undefined })
+
+  prettySample('option', arbNatOrUndefined);
 });
 
 describe("Transforming Arbitrary<T>s", () => {
-  const arbNegatives: Arbitrary<number> = fc.nat(10).map(
-    (t: number) => -t
-  )
+  const arbNegatives: Arbitrary<number> = 
+    fc.nat(10).map((t: number) => -t)
 
-  interrogate('map', arbNegatives);
+  prettySample('map', arbNegatives);
 
-  const arbEven = fc.nat(10).filter(x => x % 2 === 0)
-  interrogate('filter', arbEven);
+  const arbEven: Arbitrary<number> = 
+    fc.nat(10).filter(x => x % 2 === 0)
+
+  prettySample('filter', arbEven);
 })
 
-interface User {
-  admin: boolean,
-  name: string
-  email: string
-  phone?: string
-}
-
 describe.only("Custom Arbitrary<T>s", () => {
-  // function tuple<T0>    (arb0: Arbitrary<T0>):                      Arbitrary<[T0]>;
-  // function tuple<T0, T1>(arb0: Arbitrary<T0>, arb1: Arbitrary<T1>): Arbitrary<[T0, T1]>;
-  // ...
+
+  const arbTitle: Arbitrary<string> = fc.constantFrom("Mr.", "Ms.", "Dr.")
+
+  const capitalize = (s: string) => {
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
+  const arbName: Arbitrary<string> =
+    fc.tuple(arbTitle, fc.lorem(1), fc.lorem(1))
+      .map(([title, first, last]) => `${title} ${capitalize(first)} ${capitalize(last)}`)
+
+  prettySample('tupleMap', arbName);
+
+  /////////////////////////////////////////////////////////////////////////////
 
   const arbInterval: Arbitrary<[number, number]> = 
     fc.tuple(fc.nat(100), fc.nat(100)).filter(([a, b]) => a < b);
 
-  interrogate('tuple', arbInterval);
+  prettySample('tupleFilter', arbInterval);
 
+  /////////////////////////////////////////////////////////////////////////////
+
+  interface User {
+    admin: boolean,
+    name: string
+    email: string
+    phone?: string
+  }
 
   const arbNumerals: Arbitrary<string> = fc.nat(9).map(t => t.toString())
   const PHONE_NUMBER_LENGTH = 10
@@ -100,18 +119,19 @@ describe.only("Custom Arbitrary<T>s", () => {
 
   const arbUserPrime: Arbitrary<User> = fc.record({
     admin: fc.boolean(),
-    name: fc.unicodeString(),
+    name: arbName, // we should definitely be using a fc.unicodeString() here
     email: fc.emailAddress(),
     phone: fc.option<string, undefined>(arbPhoneNumber, { nil: undefined })
   })
 
-  interrogate('record', arbUserPrime, 2);
-})
+  prettySample('record', arbUserPrime, 2);
+});
+
 
 describe("Sledgehammers (for when you really need things to break)", () => {
-  interrogate('anything', fc.anything(), 3);
+  prettySample('anything', fc.anything(), 3);
 
-  interrogate('object', fc.object(), 3);
+  prettySample('object', fc.object(), 3);
 
-  interrogate('unicodeJsonObject', fc.unicodeJsonObject(), 3);
+  prettySample('unicodeJsonObject', fc.unicodeJsonObject(), 3);
 })
