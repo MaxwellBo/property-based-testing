@@ -1,13 +1,13 @@
 import * as fc from 'fast-check';
 import { Arbitrary } from 'fast-check';
 
-function interrogate<T>(type: string, arb: Arbitrary<T>) {
+function interrogate<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
   it(type, () => {
     console.log(
       `${type}\n${'-'.repeat(type.length)}\n`, 
 
       // sample<T>(generator: Arbitrary<T>, params?: number): T[]
-      fc.sample(arb, 10)
+      fc.sample(arb, count)
     );
   })
 }
@@ -19,6 +19,9 @@ describe("Primative Arbitrary<T>s", () => {
 
   const arbNumber: Arbitrary<number> = fc.float();
   interrogate('float', arbNumber)
+
+  const arbNat: Arbitrary<number> = fc.nat(10);
+  interrogate('float', arbNat)
 
   const arbUnicodeString: Arbitrary<string> = fc.unicodeString();
   interrogate('unicodeString', arbUnicodeString)
@@ -51,9 +54,80 @@ describe("T combinators", () => {
   interrogate('constantFrom', arbOdd);
 });
 
-describe.only("Arbitrary<T> combinators", () => {
+describe("Arbitrary<T> combinators", () => {
   // declare function array<T>(arb: Arbitrary<T>): Arbitrary<T[]>;
   const arbSymbol: Arbitrary<string> = fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
   const arbOneArmedBandit: Arbitrary<string[]> = fc.array(arbSymbol, 3, 3)
   interrogate('array', arbOneArmedBandit);
+
+  // https://github.com/dubzzz/fast-check/issues/391
+  const arbNatOrUndefined: Arbitrary<number | undefined> = fc.option(fc.nat(10), { nil: undefined })
+  interrogate('option', arbNatOrUndefined);
 });
+
+describe("Transforming Arbitrary<T>s", () => {
+  const arbNegatives: Arbitrary<number> = fc.nat(10).map(
+    (t: number) => -t
+  )
+
+  interrogate('map', arbNegatives);
+
+  const arbEven = fc.nat(10).filter(x => x % 2 === 0)
+  interrogate('filter', arbEven);
+})
+
+interface User {
+  admin: boolean,
+  name: string
+  email: string
+  phone?: string
+}
+
+describe("Custom Arbitrary<T>s", () => {
+  // function tuple<T0>(arb0: Arbitrary<T0>): Arbitrary<[T0]>;
+  // function tuple<T0, T1>(arb0: Arbitrary<T0>, arb1: Arbitrary<T1>): Arbitrary<[T0, T1]>;
+  // function tuple<T0, T1, T2>(...): Arbitrary<[T0, T1, T2]>;
+  // all the way up to T22! (I actually know why it's up to 22)
+
+  const arbNumerals: Arbitrary<string> = fc.nat(9).map(t => t.toString())
+  const PHONE_NUMBER_LENGTH = 10
+  const arbPhoneNumber: Arbitrary<string> = fc.stringOf(arbNumerals, PHONE_NUMBER_LENGTH, PHONE_NUMBER_LENGTH)
+
+  const arbUser: Arbitrary<User> = fc.tuple(
+    fc.boolean(),
+    fc.unicodeString(),
+    fc.emailAddress(),
+    fc.option<string, undefined>(arbPhoneNumber, { nil: undefined })
+  ).map(([
+    admin,
+    name,
+    email,
+    phone
+  ]) => {
+    return { 
+      admin, 
+      name, 
+      email, 
+      phone 
+    }
+  })
+
+  interrogate('tuple', arbUser, 2);
+
+  const arbUserPrime: Arbitrary<User> = fc.record({
+    admin: fc.boolean(),
+    name: fc.unicodeString(),
+    email: fc.emailAddress(),
+    phone: fc.option<string, undefined>(arbPhoneNumber, { nil: undefined })
+  })
+
+  interrogate('record', arbUserPrime, 2);
+})
+
+describe("Sledgehammers (for when you really need things to break)", () => {
+  interrogate('anything', fc.anything(), 3);
+
+  interrogate('object', fc.object(), 3);
+
+  interrogate('unicodeJsonObject', fc.unicodeJsonObject(), 3);
+})
