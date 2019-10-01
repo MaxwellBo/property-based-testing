@@ -1,6 +1,6 @@
 import * as fc from 'fast-check';
 import { runLengthEncode, runLengthDecode } from './rle';
-import { DEFAULT_CONFIGURATION } from './test-utils.test';
+import { DEFAULT_CONFIGURATION } from './test-utils';
 
 
 describe("run length encoding", () => {

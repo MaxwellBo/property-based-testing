@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { DEFAULT_CONFIGURATION } from './test-utils.test';
+import { DEFAULT_CONFIGURATION } from './test-utils';
 
 
 describe("equality", () => {
