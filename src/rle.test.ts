@@ -1,7 +1,6 @@
 import * as fc from 'fast-check';
 import { runLengthEncode, runLengthDecode } from './rle';
-import { DEFAULT_CONFIGURATION } from './test-utils';
-
+import { MY_CONFIG } from './test-utils';
 
 describe("run length encoding", () => {
   it('roundtrips', () => {
@@ -10,6 +9,6 @@ describe("run length encoding", () => {
 
         expect(runLengthDecode(runLengthEncode(data))).toEqual(data)
       }),
-      DEFAULT_CONFIGURATION);
+      { ...MY_CONFIG, seed: 780765438 });
   })
 });

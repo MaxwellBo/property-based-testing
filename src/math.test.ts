@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { DEFAULT_CONFIGURATION } from './test-utils';
+import { MY_CONFIG } from './test-utils';
 
 
 describe("equality", () => {
@@ -8,6 +8,6 @@ describe("equality", () => {
       fc.property(fc.anything(), (x) => {
         expect(x === x).toBe(true)
       }),
-      DEFAULT_CONFIGURATION);
+      { ...MY_CONFIG, seed: 1585932362 });
   })
 });
