@@ -1,6 +1,5 @@
 import * as fc from 'fast-check';
 import { Arbitrary } from 'fast-check';
-import { forInStatement } from '@babel/types';
 
 function prettySample<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
   it(type, () => {
@@ -60,10 +59,10 @@ describe("Arbitrary<T> combinators", () => {
   const arbSymbol: Arbitrary<string> = 
     fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
 
-  const arbOneArmedBandit: Arbitrary<string[]> = 
+  const arbPokieResult: Arbitrary<string[]> = 
     fc.array(arbSymbol, 3, 3)
 
-  prettySample('array', arbOneArmedBandit);
+  prettySample('array', arbPokieResult);
 
   const arbNatOrUndefined: Arbitrary<number | undefined> = 
     fc.option(fc.nat(10), { nil: undefined })
@@ -92,8 +91,8 @@ describe.only("Custom Arbitrary<T>s", () => {
   }
 
   const arbName: Arbitrary<string> =
-    fc.tuple(arbTitle, fc.lorem(1), fc.lorem(1))
-      .map(([title, first, last]) => `${title} ${capitalize(first)} ${capitalize(last)}`)
+    fc.tuple(arbTitle, fc.lorem(1).map(capitalize), fc.lorem(1).map(capitalize))
+      .map(([title, first, last]) => `${title} ${first} ${last}`)
 
   prettySample('tupleMap', arbName);
 
@@ -113,13 +112,14 @@ describe.only("Custom Arbitrary<T>s", () => {
     phone?: string
   }
 
+
   const arbNumerals: Arbitrary<string> = fc.nat(9).map(t => t.toString())
   const PHONE_NUMBER_LENGTH = 10
   const arbPhoneNumber: Arbitrary<string> = fc.stringOf(arbNumerals, PHONE_NUMBER_LENGTH, PHONE_NUMBER_LENGTH)
 
   const arbUserPrime: Arbitrary<User> = fc.record({
     admin: fc.boolean(),
-    name: arbName, // we should definitely be using a fc.unicodeString() here
+    name: arbName,
     email: fc.emailAddress(),
     phone: fc.option<string, undefined>(arbPhoneNumber, { nil: undefined })
   })

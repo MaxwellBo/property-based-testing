@@ -35,7 +35,3 @@ export function runLengthDecode<T>(seq: Run<T>[]): T[] {
 
   return result
 }
-
-const HIDE_ME = () => {
- // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-}
