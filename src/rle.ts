@@ -3,7 +3,7 @@ interface Run<T> {
   length: number
 }
 
-export function runLengthEncode<T>(seq: T[]): Run<T>[] {
+export function encode<T>(seq: T[]): Run<T>[] {
   if (seq.length === 0) {
     return []
   }
@@ -23,7 +23,7 @@ export function runLengthEncode<T>(seq: T[]): Run<T>[] {
   return result
 }
 
-export function runLengthDecode<T>(seq: Run<T>[]): T[] {
+export function decode<T>(seq: Run<T>[]): T[] {
   const result = []
 
   for (const run of seq) {
@@ -34,4 +34,8 @@ export function runLengthDecode<T>(seq: Run<T>[]): T[] {
   }
 
   return result
+}
+
+export function myEquality(a: any, b: any) {
+  return a === b
 }
