@@ -2,30 +2,30 @@ import * as fc from 'fast-check';
 import { shortestSubarray } from './shortest';
 import { MY_CONFIG } from '../test-utils';
 
-function solution(A: number[], K: number) {
-  const N = A.length;
-  let res = N + 1;
+function indexCombinations<T>(array: T[]): { low: number, high: number }[] {
+  const results = []
+  for (let i = 0; i <= array.length; i++) {
+    for (let j = i; j < array.length; j++) {
+      results.push({ low: i, high: j })
+    }
+  }
+  return results;
+}
 
-  const S = Array(N + 1).map(() => 0)
+function bruteforce(A: number[], K: number) {
+  const sum = (a: number, b: number) => a + b
   
-  for (let i = 0; i < N; i++) { 
-    S[i + 1] = S[i] + A[i];
-  }
+  const distances = indexCombinations(A)
+    // get all the subarrays that sum to K
+    .map(({ low, high }) => A.slice(low, high + 1))
+    // choose only the ones that sum to our desired value
+    .filter(arr => arr.reduce(sum, 0) === K)
+    // get their lengths
+    .map(arr => arr.length)
 
-  const d: number[] = [];
-
-
-  for(let i = 0; i < N + 1; i++) {
-      while (d.length > 0 && S[i] - S[d[0]] >= K){
-        // @ts-ignore
-          res = Math.min(res, i - d.shift());
-      }
-      while(d.length > 0 && S[i] <= S[d[d.length - 1]]){
-          d.pop()
-      }
-      d.push(i);
-  }
-  return (res === N + 1) ? -1 : res;
+  return distances.length !== 0 
+    ? Math.min.apply(null, distances)
+    : -1
 }
   
 describe("shortestSubarray", () => {
@@ -55,13 +55,49 @@ describe("shortestSubarray", () => {
 
     expect(sut(A, K)).toEqual(3);
   })
+});
 
-  it('example 3 - compare', () => {
+describe("shortestSubarray - comparison to bruteforce", () => {
+  it('example 1', () => {
+    const sut = shortestSubarray
+
+    const A = [1]
+    const K = 1
+
+    expect(sut(A, K)).toEqual(bruteforce(A, K));
+  })
+
+  it('example 2', () => {
+    const sut = shortestSubarray
+
+    const A = [1, 2]
+    const K = 4
+
+    expect(sut(A, K)).toEqual(bruteforce(A, K));
+  })
+
+  it('example 3', () => {
     const sut = shortestSubarray
 
     const A = [2, -1, 2]
     const K = 3
 
-    expect(sut(A, K)).toEqual(solution(A, K));
+    expect(sut(A, K)).toEqual(bruteforce(A, K));
+  })
+});
+
+describe("shortestSubarray - property based testing", () => {
+  it('lots of examples', () => {
+    const sut = shortestSubarray
+    
+    const arbA = fc.array(fc.integer(-100, 100), 20)
+    const arbK = fc.integer(-100, 100)
+
+    fc.assert(
+      fc.property(fc.tuple(arbA, arbK), 
+      ([A, K]) => {
+        expect(sut(A, K)).toBe(bruteforce(A, K))
+      }), MY_CONFIG
+    )
   })
 });

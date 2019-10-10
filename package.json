@@ -11,6 +11,7 @@
     "express": "^4.17.1",
     "fast-check": "1.17.0",
     "httplease": "^0.7.3",
+    "lodash": "^4.17.15",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1",
