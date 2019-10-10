@@ -5,13 +5,17 @@ export interface Todo {
     completed: boolean
 }
 
-class TodoService {
+interface TodoServiceProps {
+  baseUrl: string
+}
+
+export class TodoService {
   baseUrl: string
 
   constructor(
-    url: string
+    props: TodoServiceProps
   ) {
-    this.baseUrl = url
+    this.baseUrl = props.baseUrl
   }
 
   async getTodo(id: string): Promise<Todo> {

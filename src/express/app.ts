@@ -1,5 +1,5 @@
 import express from 'express'
-import { router as todoRouter } from './controllers/todo-controller'
+import { router as todoRouter } from './todo/todo-controller'
 
 const app = express()
 const port = 3000
