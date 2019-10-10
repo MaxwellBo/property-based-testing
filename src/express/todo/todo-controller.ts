@@ -2,7 +2,7 @@ import express from 'express'
 import { Todo, TodoService } from './todo-service'
 import { Logger } from '../utils/logger'
 
-function TodoController(
+export function mkTodoController(
   service: TodoService,
   logger: Logger
 ) {
@@ -17,4 +17,6 @@ function TodoController(
     
     res.send(todos)
   })
+
+  return router
 }

@@ -1,7 +1,7 @@
 import * as fc from 'fast-check';
 import { MY_CONFIG } from '../../test-utils';
 import { Todo, TodoService } from './todo-service';
-import { router as todoRouter } from './todo-controller';
+import { router as todoRouter, TodoController, mkTodoController } from './todo-controller';
 import express from 'express';
 import * as http from 'http';
 import * as httplease from 'httplease';
@@ -31,14 +31,16 @@ describe("", () => {
   
   it('basic read operations', async () => {
     const app = express();
-    app.use('/todos', todoRouter)
-    server = http.createServer(app);
 
-    await promisify(server.listen.bind(server))(PORT);
     const logger = new Logger({})
     const service = new TodoService({
       baseUrl: "https://jsonplaceholder.typicode.com/todos"
     });
+
+    app.use('/todos', mkTodoController(service, logger))
+    server = http.createServer(app);
+
+    await promisify(server.listen.bind(server))(PORT);
 
     service.getTodo = jest.fn().mockResolvedValue({
       id: 0,
