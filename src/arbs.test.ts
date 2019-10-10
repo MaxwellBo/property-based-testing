@@ -12,7 +12,7 @@ function prettySample<T>(type: string, arb: Arbitrary<T>, count: number = 10) {
   })
 }
 
-describe("Primative Arbitrary<T>s", () => {
+describe.skip("Primative Arbitrary<T>s", () => {
 
   const arbBoolean: Arbitrary<boolean> = fc.boolean();
   prettySample('boolean', arbBoolean)
@@ -28,7 +28,7 @@ describe("Primative Arbitrary<T>s", () => {
 });
 
 
-describe("Specific Arbitrary<string>s", () => {
+describe.skip("Specific Arbitrary<string>s", () => {
 
   const arbIpV4: Arbitrary<string> = fc.ipV4Extended();
   prettySample('ipV4', arbIpV4);
@@ -44,7 +44,7 @@ describe("Specific Arbitrary<string>s", () => {
   prettySample('unicodeJson', fc.unicodeJson())
 });
 
-describe("T combinators", () => {
+describe.skip("T combinators", () => {
   // declare function constant<T>(value: T): Arbitrary<T>;
   const arbFive: Arbitrary<number> = fc.constant(5);
   prettySample('constant', arbFive);
@@ -54,7 +54,7 @@ describe("T combinators", () => {
   prettySample('constantFrom', arbOdd);
 });
 
-describe("Arbitrary<T> combinators", () => {
+describe.skip("Arbitrary<T> combinators", () => {
   // declare function array<T>(arb: Arbitrary<T>): Arbitrary<T[]>;
   const arbSymbol: Arbitrary<string> = 
     fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
@@ -70,7 +70,7 @@ describe("Arbitrary<T> combinators", () => {
   prettySample('option', arbNatOrUndefined);
 });
 
-describe("Transforming Arbitrary<T>s", () => {
+describe.skip("Transforming Arbitrary<T>s", () => {
   const arbNegatives: Arbitrary<number> = 
     fc.nat(10).map((t: number) => -t)
 
@@ -82,7 +82,7 @@ describe("Transforming Arbitrary<T>s", () => {
   prettySample('filter', arbEven);
 })
 
-describe.only("Custom Arbitrary<T>s", () => {
+describe.skip("Custom Arbitrary<T>s", () => {
 
   const arbTitle: Arbitrary<string> = fc.constantFrom("Mr.", "Ms.", "Dr.")
 
@@ -128,7 +128,7 @@ describe.only("Custom Arbitrary<T>s", () => {
 });
 
 
-describe("Sledgehammers (for when you really need things to break)", () => {
+describe.skip("Sledgehammers (for when you really need things to break)", () => {
   prettySample('anything', fc.anything(), 3);
 
   prettySample('object', fc.object(), 3);

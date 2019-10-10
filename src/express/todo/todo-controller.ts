@@ -8,7 +8,9 @@ export function mkTodoController(
 ) {
   const router = express.Router()
 
-  router.get('/', async (req, res) => {
+  router.get('/todos', async (req, res) => {
+    logger.log({ message: 'Getting all todos' })
+
     const todos = await service.getAllTodos()
 
     if (req.params.completed) {
