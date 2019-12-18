@@ -11,6 +11,10 @@ export function shortestSubarray(A: number[], K: number): number {
   let r = 0 // right pointer
   let s = A[0]; // running sum
 
+  if (A.length === 1 && A[0] === K) {
+    return 1
+  }
+
   while (l < A.length && r < A.length && l <= r) {
     if (s >= K) {
       // if the sum is too big, cut out the first element
@@ -29,6 +33,5 @@ export function shortestSubarray(A: number[], K: number): number {
       break
     }
   }
-
   return res === Number.MAX_SAFE_INTEGER ? -1 : res
 }

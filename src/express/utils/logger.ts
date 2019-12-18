@@ -1,3 +1,6 @@
+import * as fc from 'fast-check';
+import { Arbitrary } from 'fast-check';
+
 enum Level {
     Debug,
     Info,
@@ -6,11 +9,15 @@ enum Level {
     Fatal
 }
 
+
 interface LogReport {
     level?: Level,
     message: string
     attributes?: Object
 }
+const arbLogReport = fc.record({
+    level: arbLevel
+})
 
 const DEFAULTS = { level: Level.Info }
 

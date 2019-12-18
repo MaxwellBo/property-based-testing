@@ -13,7 +13,7 @@ export function encode<T>(seq: T[]): Run<T>[] {
   for (const c of seq) {
     const last = result[result.length - 1] // will never be undefined
 
-    if (c === last.value) {
+    if (Object.is(c, last.value)) {
       last.length += 1
     } else {
       result.push({ value: c, length: 1 })
@@ -36,6 +36,6 @@ export function decode<T>(seq: Run<T>[]): T[] {
   return result
 }
 
-export function myEquality(a: any, b: any) {
+export function myEquality(a: number, b: any) {
   return a === b
 }

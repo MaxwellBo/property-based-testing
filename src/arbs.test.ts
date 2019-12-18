@@ -54,7 +54,7 @@ describe.skip("T combinators", () => {
   prettySample('constantFrom', arbOdd);
 });
 
-describe.skip("Arbitrary<T> combinators", () => {
+describe("Arbitrary<T> combinators", () => {
   // declare function array<T>(arb: Arbitrary<T>): Arbitrary<T[]>;
   const arbSymbol: Arbitrary<string> = 
     fc.constantFrom("7️⃣", "🍒", "💰", "🍀", "💎")
@@ -70,7 +70,7 @@ describe.skip("Arbitrary<T> combinators", () => {
   prettySample('option', arbNatOrUndefined);
 });
 
-describe.skip("Transforming Arbitrary<T>s", () => {
+describe("Transforming Arbitrary<T>s", () => {
   const arbNegatives: Arbitrary<number> = 
     fc.nat(10).map((t: number) => -t)
 
@@ -82,7 +82,7 @@ describe.skip("Transforming Arbitrary<T>s", () => {
   prettySample('filter', arbEven);
 })
 
-describe.skip("Custom Arbitrary<T>s", () => {
+describe("Custom Arbitrary<T>s", () => {
 
   const arbTitle: Arbitrary<string> = fc.constantFrom("Mr.", "Ms.", "Dr.")
 
@@ -112,7 +112,6 @@ describe.skip("Custom Arbitrary<T>s", () => {
     phone?: string
   }
 
-
   const arbNumerals: Arbitrary<string> = fc.nat(9).map(t => t.toString())
   const PHONE_NUMBER_LENGTH = 10
   const arbPhoneNumber: Arbitrary<string> = fc.stringOf(arbNumerals, PHONE_NUMBER_LENGTH, PHONE_NUMBER_LENGTH)
@@ -128,7 +127,7 @@ describe.skip("Custom Arbitrary<T>s", () => {
 });
 
 
-describe.skip("Sledgehammers (for when you really need things to break)", () => {
+describe("Sledgehammers (for when you really need things to break)", () => {
   prettySample('anything', fc.anything(), 3);
 
   prettySample('object', fc.object(), 3);

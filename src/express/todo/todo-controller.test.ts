@@ -5,7 +5,7 @@ import { mkTodoController } from './todo-controller';
 import express from 'express';
 import * as http from 'http';
 import * as httplease from 'httplease';
-import {promisify} from 'util';
+import { promisify } from 'util';
 import { Logger } from '../utils/logger';
 
 describe("todo-controller", () => {
@@ -25,51 +25,58 @@ describe("todo-controller", () => {
   });
 
   afterEach(async () => {
-      // @ts-ignore
-      await promisify(server.close.bind(server))();
+    // @ts-ignore
+    await promisify(server.close.bind(server))();
   });
-  
-  it.skip('basic read operations', async () => {
-    const app = express();
 
-    const logger = new Logger({})
-    const service = new TodoService({
-      baseUrl: "https://jsonplaceholder.typicode.com"
-    });
+  it('basic read operations', async () => {
+    fc.assert(
+      fc.property(arbLogger, logger => {
 
-    app.use('/', mkTodoController(service, logger))
-    server = http.createServer(app);
+        const app = express();
 
-    await promisify(server.listen.bind(server))(PORT);
+        const service = new TodoService({
+          baseUrl: "https://jsonplaceholder.typicode.com"
+        });
 
-    const todo0 = {
-      id: 0,
-      userId: 0,
-      completed: false, // sadly
-      title: 'Convince people to learn Scala'
-    }
+        app.use('/', mkTodoController(service, logger))
+        server = http.createServer(app);
 
-    const todo1 = {
-      id: 1,
-      userId: 1,
-      completed: false, // never gonna happen
-      title: 'Convince people to learn Haskell'
-    }
+        await promisify(server.listen.bind(server))(PORT);
 
-    const todo2 = {
-      id: 1,
-      userId: 1,
-      completed: false, // snowballs chance in hell
-      title: 'Convince people to learn Erlang'
-    }
+        const todo0 = {
+          id: 0,
+          userId: 0,
+          completed: false, // sadly
+          title: 'Convince people to learn Scala'
+        }
 
-    const allTodos = [todo0, todo1, todo2]
+        const todo1 = {
+          id: 1,
+          userId: 1,
+          completed: false, // never gonna happen
+          title: 'Convince people to learn Haskell'
+        }
 
-    service.getAllTodos = jest.fn().mockResolvedValue(allTodos);
+        const todo2 = {
+          id: 1,
+          userId: 1,
+          completed: false, // snowballs chance in hell
+          title: 'Convince people to learn Erlang'
+        }
 
-    const response = await client.send();
-    expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual(allTodos)
-    expect(service.getAllTodos).toBeCalledTimes(1)
-  });
+        const allTodos = [todo0, todo1, todo2]
+
+        service.getAllTodos = jest.fn().mockResolvedValue(allTodos);
+
+        const response = await client.send();
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toEqual(allTodos)
+        expect(service.getAllTodos).toBeCalledTimes(1)
+
+      })
+  })
+
+
+});
 });

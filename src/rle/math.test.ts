@@ -37,3 +37,4 @@ function describeEquivalence<T>(name: string, sut: (a:T, b: T) => boolean) {
 }
 
 describeEquivalence('myEquality', myEquality)
+describeEquivalence('Object.is', Object.is)

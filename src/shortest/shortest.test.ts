@@ -89,6 +89,9 @@ describe("shortestSubarray - comparison to bruteforce", () => {
 describe("shortestSubarray - property based testing", () => {
   it('lots of examples', () => {
     const sut = shortestSubarray
+
+
+    fc.array().withBias
     
     const arbA = fc.array(fc.integer(-100, 100), 20)
     const arbK = fc.integer(-100, 100)
